@@ -1,4 +1,5 @@
 import os
+import socket
 import smtplib
 import requests
 import tempfile
@@ -10,6 +11,12 @@ from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Force IPv4 — Railway does not support IPv6 outbound
+_orig_getaddrinfo = socket.getaddrinfo
+def _ipv4_only(host, port, family=0, type=0, proto=0, flags=0):
+    return _orig_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
+socket.getaddrinfo = _ipv4_only
 
 app = Flask(__name__)
 
