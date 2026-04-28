@@ -112,13 +112,18 @@ def send_email(subject, html_body, attachment_path=None, attachment_name=None):
             print(f"[ERROR] Failed to attach image: {e}")
 
     try:
-        print(f"[INFO] Sending email to {RECIPIENT_EMAIL} ...")
-        with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as server:
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-            server.login(GMAIL_USER, GMAIL_PASSWORD)
-            server.sendmail(GMAIL_USER, RECIPIENT_EMAIL, msg.as_string())
+        print(f"[INFO] Sending email from {GMAIL_USER} to {RECIPIENT_EMAIL} ...")
+        print(f"[INFO] Connecting to smtp.gmail.com:587 ...")
+        server = smtplib.SMTP("smtp.gmail.com", 587, timeout=15)
+        print("[INFO] Connected. Starting TLS ...")
+        server.ehlo()
+        server.starttls()
+        server.ehlo()
+        print("[INFO] TLS started. Logging in ...")
+        server.login(GMAIL_USER, GMAIL_PASSWORD)
+        print("[INFO] Logged in. Sending ...")
+        server.sendmail(GMAIL_USER, RECIPIENT_EMAIL, msg.as_string())
+        server.quit()
         print("[INFO] Email sent successfully.")
         return True
     except smtplib.SMTPAuthenticationError as e:
