@@ -113,7 +113,10 @@ def send_email(subject, html_body, attachment_path=None, attachment_name=None):
 
     try:
         print(f"[INFO] Sending email to {RECIPIENT_EMAIL} ...")
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
             server.login(GMAIL_USER, GMAIL_PASSWORD)
             server.sendmail(GMAIL_USER, RECIPIENT_EMAIL, msg.as_string())
         print("[INFO] Email sent successfully.")
