@@ -134,6 +134,22 @@ def send_email(subject, html_body, attachment_path=None, attachment_name=None):
         return False
 
 
+@app.route("/health", methods=["GET"])
+def health():
+    result = {"gmail_user": GMAIL_USER, "recipient": RECIPIENT_EMAIL, "smtp_test": None}
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587, timeout=10)
+        server.ehlo()
+        server.starttls()
+        server.ehlo()
+        server.login(GMAIL_USER, GMAIL_PASSWORD)
+        server.quit()
+        result["smtp_test"] = "SUCCESS"
+    except Exception as e:
+        result["smtp_test"] = f"FAILED: {type(e).__name__}: {e}"
+    return jsonify(result), 200
+
+
 @app.route("/webhook", methods=["POST"])
 def webhook():
     payload = request.get_json(silent=True)
