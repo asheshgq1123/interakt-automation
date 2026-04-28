@@ -113,7 +113,7 @@ def send_email(subject, html_body, attachment_path=None, attachment_name=None):
 
     try:
         print(f"[INFO] Sending email to {RECIPIENT_EMAIL} ...")
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as server:
             server.ehlo()
             server.starttls()
             server.ehlo()
@@ -121,8 +121,11 @@ def send_email(subject, html_body, attachment_path=None, attachment_name=None):
             server.sendmail(GMAIL_USER, RECIPIENT_EMAIL, msg.as_string())
         print("[INFO] Email sent successfully.")
         return True
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"[ERROR] SMTP Auth failed: {e}")
+        return False
     except Exception as e:
-        print(f"[ERROR] Failed to send email: {e}")
+        print(f"[ERROR] Failed to send email ({type(e).__name__}): {e}")
         return False
 
 
